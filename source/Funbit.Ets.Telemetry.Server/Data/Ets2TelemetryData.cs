@@ -258,23 +258,23 @@ namespace Funbit.Ets.Telemetry.Server.Data
         }
 
         public bool Attached => _rawData.Struct.trailer_attached != 0;
-        public string Id => "FIX ME"; //Ets2TelemetryData.BytesToString(_rawData.Struct.trailerId);
-        public string Name => "FIX ME"; //Ets2TelemetryData.BytesToString(_rawData.Struct.trailerName);
+        public string Id => Ets2TelemetryData.BytesToString(_rawData.Struct.trailer0id);
+        public string Name => Ets2TelemetryData.BytesToString(_rawData.Struct.cargo);
 
         /// <summary>
         /// Trailer mass in kilograms.
         /// </summary>
-        public float Mass => 99999999F; //_rawData.Struct.trailerMass;
+        public float Mass => _rawData.Struct.cargoMass;
 
-        public float Wear => 99999999F; //_rawData.Struct.wearTrailer;
+        public float Wear => _rawData.Struct.trailer0wearChassis;
 
-        public IEts2Placement Placement => new Ets2Placement(0,0,0,0,0,0);
-            /*_rawData.Struct.trailerCoordinateX,
-            _rawData.Struct.trailerCoordinateY,
-            _rawData.Struct.trailerCoordinateZ,
-            _rawData.Struct.trailerRotationX,
-            _rawData.Struct.trailerRotationY,
-            _rawData.Struct.trailerRotationZ);*/
+        public IEts2Placement Placement => new Ets2Placement(
+            _rawData.Struct.trailer0worldX,
+            _rawData.Struct.trailer0worldY,
+            _rawData.Struct.trailer0worldZ,
+            _rawData.Struct.trailer0rotationX,
+            _rawData.Struct.trailer0rotationY,
+            _rawData.Struct.trailer0rotationZ);
     }
 
     class Ets2Navigation : IEts2Navigation
