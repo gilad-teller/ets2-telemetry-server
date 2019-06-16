@@ -54,7 +54,7 @@ namespace Funbit.Ets.Telemetry.Server.Data
 
         public string GameName => Ets2ProcessHelper.LastRunningGameName;
         public bool Paused => _rawData.Struct.paused != 0;
-        public DateTime Time => Ets2TelemetryData.MinutesToDate(_rawData.Struct.timeAbsolute);
+        public DateTime Time => Ets2TelemetryData.MinutesToDate((int) _rawData.Struct.timeAbsolute);
         public float TimeScale => _rawData.Struct.localScale;
         public DateTime NextRestStopTime => Ets2TelemetryData.MinutesToDate(_rawData.Struct.nextRestStop);
         public string Version => $"{_rawData.Struct.ets2_version_major}.{_rawData.Struct.ets2_version_minor}";
@@ -119,12 +119,12 @@ namespace Funbit.Ets.Telemetry.Server.Data
         /// </summary>
         public float CruiseControlSpeed => _rawData.Struct.cruiseControlSpeed * 3.6f;
 
-        public bool CruiseControlOn => _rawData.Struct.cruiseControl != 0;
+        public bool CruiseControlOn => _rawData.Struct.cruiseControl;
         public float Odometer => _rawData.Struct.truckOdometer;
         public int Gear => _rawData.Struct.gear;
         public int DisplayedGear => _rawData.Struct.displayedGear;
-        public int ForwardGears => _rawData.Struct.gearsForward;
-        public int ReverseGears => _rawData.Struct.gearsReverse;
+        public int ForwardGears => (int)_rawData.Struct.gearsForward;
+        public int ReverseGears => (int)_rawData.Struct.gearsReverse;
         public string ShifterType => Ets2TelemetryData.BytesToString(_rawData.Struct.shifterType);
         public float EngineRpm => _rawData.Struct.engineRpm;
         public float EngineRpmMax => _rawData.Struct.engineRpmMax;
@@ -132,7 +132,7 @@ namespace Funbit.Ets.Telemetry.Server.Data
         public float FuelCapacity => _rawData.Struct.fuelCapacity;
         public float FuelAverageConsumption => _rawData.Struct.fuelAvgConsumption;
         public float FuelWarningFactor => _rawData.Struct.fuelWarningFactor;
-        public bool FuelWarningOn => _rawData.Struct.fuelWarning != 0;
+        public bool FuelWarningOn => _rawData.Struct.fuelWarning;
         public float WearEngine => _rawData.Struct.wearEngine;
         public float WearTransmission => _rawData.Struct.wearTransmission;
         public float WearCabin => _rawData.Struct.wearCabin;
@@ -146,54 +146,54 @@ namespace Funbit.Ets.Telemetry.Server.Data
         public float GameThrottle => _rawData.Struct.gameThrottle;
         public float GameBrake => _rawData.Struct.gameBrake;
         public float GameClutch => _rawData.Struct.gameClutch;
-        public int ShifterSlot => _rawData.Struct.shifterSlot;
+        public int ShifterSlot => (int)_rawData.Struct.shifterSlot;
 
         //public int ShifterToggle
         //{
         //    get { return _rawData.Struct.shifterToggle; }
         //}
 
-        public bool EngineOn => _rawData.Struct.engineEnabled != 0;
-        public bool ElectricOn => _rawData.Struct.electricEnabled != 0;
-        public bool WipersOn => _rawData.Struct.wipers != 0;
-        public int RetarderBrake => _rawData.Struct.retarderBrake;
+        public bool EngineOn => _rawData.Struct.engineEnabled;
+        public bool ElectricOn => _rawData.Struct.electricEnabled;
+        public bool WipersOn => _rawData.Struct.wipers;
+        public int RetarderBrake => (int)_rawData.Struct.retarderBrake;
         public int RetarderStepCount => (int)_rawData.Struct.retarderStepCount;
-        public bool ParkBrakeOn => _rawData.Struct.parkBrake != 0;
-        public bool MotorBrakeOn => _rawData.Struct.motorBrake != 0;
+        public bool ParkBrakeOn => _rawData.Struct.parkBrake;
+        public bool MotorBrakeOn => _rawData.Struct.motorBrake;
         public float BrakeTemperature => _rawData.Struct.brakeTemperature;
         public float Adblue => _rawData.Struct.adblue;
         public float AdblueCapacity => _rawData.Struct.adblueCapacity;
-        public float AdblueAverageConsumption => _rawData.Struct.adblueConsumption;
-        public bool AdblueWarningOn => _rawData.Struct.adblueWarning != 0;
+        public float AdblueAverageConsumption => 0.0F; // Removed in SDK 1.9
+        public bool AdblueWarningOn => _rawData.Struct.adblueWarning;
         public float AirPressure => _rawData.Struct.airPressure;
-        public bool AirPressureWarningOn => _rawData.Struct.airPressureWarning != 0;
+        public bool AirPressureWarningOn => _rawData.Struct.airPressureWarning;
         public float AirPressureWarningValue => _rawData.Struct.airPressureWarningValue;
-        public bool AirPressureEmergencyOn => _rawData.Struct.airPressureEmergency != 0;
+        public bool AirPressureEmergencyOn => _rawData.Struct.airPressureEmergency;
         public float AirPressureEmergencyValue => _rawData.Struct.airPressureEmergencyValue;
         public float OilTemperature => _rawData.Struct.oilTemperature;
         public float OilPressure => _rawData.Struct.oilPressure;
-        public bool OilPressureWarningOn => _rawData.Struct.oilPressureWarning != 0;
+        public bool OilPressureWarningOn => _rawData.Struct.oilPressureWarning;
         public float OilPressureWarningValue => _rawData.Struct.oilPressureWarningValue;
         public float WaterTemperature => _rawData.Struct.waterTemperature;
-        public bool WaterTemperatureWarningOn => _rawData.Struct.waterTemperatureWarning != 0;
+        public bool WaterTemperatureWarningOn => _rawData.Struct.waterTemperatureWarning;
         public float WaterTemperatureWarningValue => _rawData.Struct.waterTemperatureWarningValue;
         public float BatteryVoltage => _rawData.Struct.batteryVoltage;
-        public bool BatteryVoltageWarningOn => _rawData.Struct.batteryVoltageWarning != 0;
+        public bool BatteryVoltageWarningOn => _rawData.Struct.batteryVoltageWarning;
         public float BatteryVoltageWarningValue => _rawData.Struct.batteryVoltageWarningValue;
         public float LightsDashboardValue => _rawData.Struct.lightsDashboard;
         public bool LightsDashboardOn => _rawData.Struct.lightsDashboard > 0;
-        public bool BlinkerLeftActive => _rawData.Struct.blinkerLeftActive != 0;
-        public bool BlinkerRightActive => _rawData.Struct.blinkerRightActive != 0;
-        public bool BlinkerLeftOn => _rawData.Struct.blinkerLeftOn != 0;
-        public bool BlinkerRightOn => _rawData.Struct.blinkerRightOn != 0;
-        public bool LightsParkingOn => _rawData.Struct.lightsParking != 0;
-        public bool LightsBeamLowOn => _rawData.Struct.lightsBeamLow != 0;
-        public bool LightsBeamHighOn => _rawData.Struct.lightsBeamHigh != 0;
+        public bool BlinkerLeftActive => _rawData.Struct.blinkerLeftActive;
+        public bool BlinkerRightActive => _rawData.Struct.blinkerRightActive;
+        public bool BlinkerLeftOn => _rawData.Struct.blinkerLeftOn;
+        public bool BlinkerRightOn => _rawData.Struct.blinkerRightOn;
+        public bool LightsParkingOn => _rawData.Struct.lightsParking;
+        public bool LightsBeamLowOn => _rawData.Struct.lightsBeamLow;
+        public bool LightsBeamHighOn => _rawData.Struct.lightsBeamHigh;
         public bool LightsAuxFrontOn => _rawData.Struct.lightsAuxFront != 0;
         public bool LightsAuxRoofOn => _rawData.Struct.lightsAuxRoof != 0;
-        public bool LightsBeaconOn => _rawData.Struct.lightsBeacon != 0;
-        public bool LightsBrakeOn => _rawData.Struct.lightsBrake != 0;
-        public bool LightsReverseOn => _rawData.Struct.lightsReverse != 0;
+        public bool LightsBeaconOn => _rawData.Struct.lightsBeacon;
+        public bool LightsBrakeOn => _rawData.Struct.lightsBrake;
+        public bool LightsReverseOn => _rawData.Struct.lightsReverse;
 
         public IEts2Placement Placement => new Ets2Placement(
             _rawData.Struct.coordinateX,
@@ -257,24 +257,24 @@ namespace Funbit.Ets.Telemetry.Server.Data
             _rawData = rawData;
         }
 
-        public bool Attached => _rawData.Struct.trailer_attached != 0;
-        public string Id => Ets2TelemetryData.BytesToString(_rawData.Struct.trailerId);
-        public string Name => Ets2TelemetryData.BytesToString(_rawData.Struct.trailerName);
+        public bool Attached => _rawData.Struct.trailer_attached;
+        public string Id => "FIX ME"; //Ets2TelemetryData.BytesToString(_rawData.Struct.trailerId);
+        public string Name => "FIX ME"; //Ets2TelemetryData.BytesToString(_rawData.Struct.trailerName);
 
         /// <summary>
         /// Trailer mass in kilograms.
         /// </summary>
-        public float Mass => _rawData.Struct.trailerMass;
+        public float Mass => 99999999F; //_rawData.Struct.trailerMass;
 
-        public float Wear => _rawData.Struct.wearTrailer;
+        public float Wear => 99999999F; //_rawData.Struct.wearTrailer;
 
-        public IEts2Placement Placement => new Ets2Placement(
-            _rawData.Struct.trailerCoordinateX,
+        public IEts2Placement Placement => new Ets2Placement(0,0,0,0,0,0);
+            /*_rawData.Struct.trailerCoordinateX,
             _rawData.Struct.trailerCoordinateY,
             _rawData.Struct.trailerCoordinateZ,
             _rawData.Struct.trailerRotationX,
             _rawData.Struct.trailerRotationY,
-            _rawData.Struct.trailerRotationZ);
+            _rawData.Struct.trailerRotationZ);*/
     }
 
     class Ets2Navigation : IEts2Navigation
@@ -300,14 +300,14 @@ namespace Funbit.Ets.Telemetry.Server.Data
             _rawData = rawData;
         }
 
-        public int Income => _rawData.Struct.jobIncome;
-        public DateTime DeadlineTime => Ets2TelemetryData.MinutesToDate(_rawData.Struct.jobDeadline);
+        public int Income => (int)_rawData.Struct.jobIncome;
+        public DateTime DeadlineTime => Ets2TelemetryData.MinutesToDate((int)_rawData.Struct.jobDeadline);
         public DateTime RemainingTime 
         {
             get
             {
                 if (_rawData.Struct.jobDeadline > 0)
-                    return Ets2TelemetryData.MinutesToDate(_rawData.Struct.jobDeadline - _rawData.Struct.timeAbsolute);
+                    return Ets2TelemetryData.MinutesToDate((int)(_rawData.Struct.jobDeadline - _rawData.Struct.timeAbsolute));
                 return Ets2TelemetryData.MinutesToDate(0);
             }
         }
