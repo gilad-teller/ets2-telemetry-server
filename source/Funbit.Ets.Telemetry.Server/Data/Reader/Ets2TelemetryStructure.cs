@@ -11,34 +11,34 @@ namespace Funbit.Ets.Telemetry.Server.Data.Reader
         const int GeneralStringSize = 64;
         private const int MaxTruckWheelCount = 16;
 
-        public uint time;
-        public uint paused;
+        public int time;
+        public byte paused;
 
         // 35 byte padding
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 35)]
         private readonly byte[] padding0;
 
-        public uint ets2_telemetry_plugin_revision;
-        public uint ets2_version_major;
-        public uint ets2_version_minor;
-        public uint game;
-        public uint telemetry_version_game_major;
-        public uint telemetry_version_game_minor; // scs_values
-        public uint timeAbsolute;                 // common_ui
+        public int ets2_telemetry_plugin_revision;
+        public int ets2_version_major;
+        public int ets2_version_minor;
+        public int game;
+        public int telemetry_version_game_major;
+        public int telemetry_version_game_minor; // scs_values
+        public int timeAbsolute;                 // common_ui
 
-        public uint gearsForward;
-        public uint gearsReverse;
-        public uint retarderStepCount;
-        public uint truckWheelCount;
-        public uint selectorCount;
-        public uint jobDeadline;
-        public uint maxTrailerCount;
-        public uint unitCount;                    // config_ui
+        public int gearsForward;
+        public int gearsReverse;
+        public int retarderStepCount;
+        public int truckWheelCount;
+        public int selectorCount;
+        public int jobDeadline;
+        public int maxTrailerCount;
+        public int unitCount;                    // config_ui
 
-        public uint shifterSlot;
-        public uint retarderBrake;
-        public uint lightsAuxFront;
-        public uint lightsAuxRoof;
+        public int shifterSlot;
+        public int retarderBrake;
+        public int lightsAuxFront;
+        public int lightsAuxRoof;
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = MaxTruckWheelCount)]
         public uint[] truck_wheelSubstance;
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 32)]
@@ -57,7 +57,7 @@ namespace Funbit.Ets.Telemetry.Server.Data.Reader
         public int gear;
         public int displayedGear;
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 32)]
-        public int hshifterResulting;             // truck_i
+        public int[] hshifterResulting;             // truck_i
 
         public int jobDeliveredEarnedXp;          // gameplay_i
 
@@ -141,47 +141,47 @@ namespace Funbit.Ets.Telemetry.Server.Data.Reader
         private readonly byte[] padding3;         // buffer_f
 
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = MaxTruckWheelCount)]
-        public bool[] truckWheelSteerable;
+        public byte[] truckWheelSteerable;
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = MaxTruckWheelCount)]
-        public bool[] truckWheelSimulated;
+        public byte[] truckWheelSimulated;
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = MaxTruckWheelCount)]
-        public bool[] truckWheelPowered;
+        public byte[] truckWheelPowered;
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = MaxTruckWheelCount)]
-        public bool[] truckWheelLiftable;
+        public byte[] truckWheelLiftable;
 
-        public bool isCargoLoaded;
-        public bool specialJob;                   // config_b
+        public byte isCargoLoaded;
+        public byte specialJob;                   // config_b
 
-        public bool parkBrake;
-        public bool motorBrake;
-        public bool airPressureWarning;
-        public bool airPressureEmergency;
-        public bool fuelWarning;
-        public bool adblueWarning;
-        public bool oilPressureWarning;
-        public bool waterTemperatureWarning;
-        public bool batteryVoltageWarning;
-        public bool electricEnabled;
-        public bool engineEnabled;
-        public bool wipers;
-        public bool blinkerLeftActive;
-        public bool blinkerRightActive;
-        public bool blinkerLeftOn;
-        public bool blinkerRightOn;
-        public bool lightsParking;
-        public bool lightsBeamLow;
-        public bool lightsBeamHigh;
-        public bool lightsBeacon;
-        public bool lightsBrake;
-        public bool lightsReverse;
-        public bool cruiseControl;
+        public byte parkBrake;
+        public byte motorBrake;
+        public byte airPressureWarning;
+        public byte airPressureEmergency;
+        public byte fuelWarning;
+        public byte adblueWarning;
+        public byte oilPressureWarning;
+        public byte waterTemperatureWarning;
+        public byte batteryVoltageWarning;
+        public byte electricEnabled;
+        public byte engineEnabled;
+        public byte wipers;
+        public byte blinkerLeftActive;
+        public byte blinkerRightActive;
+        public byte blinkerLeftOn;
+        public byte blinkerRightOn;
+        public byte lightsParking;
+        public byte lightsBeamLow;
+        public byte lightsBeamHigh;
+        public byte lightsBeacon;
+        public byte lightsBrake;
+        public byte lightsReverse;
+        public byte cruiseControl;
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = MaxTruckWheelCount)]
-        public bool[] truckWheelOnGround;
+        public byte[] truckWheelOnGround;
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 2)]
-        public bool[] shifterToggle;              // truck_b
+        public byte[] shifterToggle;              // truck_b
 
-        public bool jobDelieveredAutoparkUsed;
-        public bool jobDeliveredAutoloadUsed;     // gameplay_b
+        public byte jobDelieveredAutoparkUsed;
+        public byte jobDeliveredAutoloadUsed;     // gameplay_b
 
         // 31 byte padding
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 31)]
@@ -243,12 +243,12 @@ namespace Funbit.Ets.Telemetry.Server.Data.Reader
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 152)]
         private readonly byte[] padding6;         // buffer_fp
 
-        public float coordinateX;
-        public float coordinateY;
-        public float coordinateZ;
-        public float rotationX;
-        public float rotationY;
-        public float rotationZ;
+        public double coordinateX;
+        public double coordinateY;
+        public double coordinateZ;
+        public double rotationX;
+        public double rotationY;
+        public double rotationZ;
 
         // 52 byte padding
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 52)]
@@ -338,14 +338,14 @@ namespace Funbit.Ets.Telemetry.Server.Data.Reader
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 52)]
         private readonly byte[] padding10;        // buffer_ll
 
-        public bool trailer_attached;
-        public bool jobFinished;
-        public bool jobCancelled;
-        public bool jobDelivered;
-        public bool fined;
-        public bool tollgate;
-        public bool ferry;
-        public bool train;                        // special_b
+        public byte trailer_attached;
+        public byte jobFinished;
+        public byte jobCancelled;
+        public byte jobDelivered;
+        public byte fined;
+        public byte tollgate;
+        public byte ferry;
+        public byte train;                        // special_b
 
         // 92 byte padding
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 92)]
@@ -354,8 +354,8 @@ namespace Funbit.Ets.Telemetry.Server.Data.Reader
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = GeneralStringSize * 25)]
         public char[,] substances;                // substances (may not even work idk)
 
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 1552)]
-        public Ets2TrailerTelemetryStructure[] trailers;
+        /*[MarshalAs(UnmanagedType.ByValArray, SizeConst = 1552)]
+        public Ets2TrailerTelemetryStructure[] trailers;*/
     }
 
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
@@ -365,17 +365,17 @@ namespace Funbit.Ets.Telemetry.Server.Data.Reader
         private const int MaxTruckWheelCount = 16;
 
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = MaxTruckWheelCount)]
-        public bool[] wheelSteerable;
+        public byte[] wheelSteerable;
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = MaxTruckWheelCount)]
-        public bool[] wheelSimulated;
+        public byte[] wheelSimulated;
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = MaxTruckWheelCount)]
-        public bool[] wheelPowered;
+        public byte[] wheelPowered;
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = MaxTruckWheelCount)]
-        public bool[] wheelLiftable;              // con_b
+        public byte[] wheelLiftable;              // con_b
 
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = MaxTruckWheelCount)]
-        public bool[] wheelOnGround;
-        public bool attached;                     // com_b
+        public byte[] wheelOnGround;
+        public byte attached;                     // com_b
 
         // 3 byte padding
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 3)]

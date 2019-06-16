@@ -94,17 +94,17 @@ namespace Funbit.Ets.Telemetry.Server.Data
         /// X coordinate of the placement.
         /// Example: 13723.7881
         /// </summary>
-        float X { get; }
+        double X { get; }
         /// <summary>
         /// Y coordinate of the placement.
         /// Example: 65.22377
         /// </summary>
-        float Y { get; }
+        double Y { get; }
         /// <summary>
         /// Z coordinate of the placement.
         /// Example: 13738.8018
         /// </summary>
-        float Z { get; }
+        double Z { get; }
         /// <summary>
         /// The angle is measured counterclockwise in horizontal plane when looking
         /// from top where 0 corresponds to forward (north), 0.25 to left (west),
@@ -112,7 +112,7 @@ namespace Funbit.Ets.Telemetry.Server.Data
         /// Stored in unit range where (0,1) corresponds to (0,360).
         /// Example: 0.13688866
         /// </summary>
-        float Heading { get; }
+        double Heading { get; }
         /// <summary>
         /// The pitch angle is zero when in horizontal direction,
         /// with positive values pointing up (0.25 directly to zenith),
@@ -120,13 +120,13 @@ namespace Funbit.Ets.Telemetry.Server.Data
         /// Stored in unit range where (-0.25,0.25) corresponds to (-90,90).
         /// Example: 0.00005
         /// </summary>
-        float Pitch { get; }
+        double Pitch { get; }
         /// <summary>
         /// The angle is measured in counterclockwise when looking in direction of the roll axis.
         /// Stored in unit range where (-0.5,0.5) corresponds to (-180,180).
         /// Example: -0.00009
         /// </summary>
-        float Roll { get; }
+        double Roll { get; }
     }
 
     public interface IEts2Truck
