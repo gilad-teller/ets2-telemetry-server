@@ -216,7 +216,7 @@
     &.yes { background-image: url("images/parklights-on.png") }
 }
 
-.trailer-attached {
+.cargo-cargoLoaded {
     background-image: url("images/trailer-off.png");
     position: absolute;
     left: 1726px;
@@ -226,7 +226,7 @@
     &.yes { background-image: url("images/trailer-on.png") }
 }
 
-.trailer-mass {
+.cargo-mass {
     color: #3e3b60;
     font-family: Courier New, Courier, monospace;
     font-weight: bold;
@@ -239,7 +239,7 @@
     text-align: center;    
 }
 
-.trailer-name {
+.cargo-name {
     color: #222;
     font-family: Arial, Tahoma;    
     font-size: 28px;
@@ -277,8 +277,8 @@
 .truck-odometer,
 .truck-speedRounded,
 .truck-cruiseControlSpeedRounded[data-value="0"],
-.trailer-mass, 
-.trailer-name, 
+.cargo-mass, 
+.cargo-name, 
 ._truckWearInfo,
 ._trailerWearInfo,
 .job-remainingTime, 
@@ -311,8 +311,8 @@
 
 .hasJob {    
     &.yes {
-        .trailer-mass, 
-        .trailer-name, 
+        .cargo-mass, 
+        .cargo-name, 
         .job-remainingTime, 
         ._jobIncome,
         ._jobSource, 
@@ -371,7 +371,7 @@ table._job {
 }
 
 .truck-wearSum,
-.trailer-wear {
+.cargo-damage {
     font-size: 44px;
     color: orangered;
 }

@@ -216,7 +216,7 @@ body {
 .truck-lightsParkingOn.yes {
   background-image: url("images/parklights-on.png");
 }
-.trailer-attached {
+.trailer1-attached {
   background-image: url("images/trailer-off.png");
   position: absolute;
   left: 1726px;
@@ -224,10 +224,10 @@ body {
   width: 278px;
   height: 152px;
 }
-.trailer-attached.yes {
+.trailer1-attached.yes {
   background-image: url("images/trailer-on.png");
 }
-.trailer-mass {
+.cargo-mass {
   color: #3e3b60;
   font-family: Courier New, Courier, monospace;
   font-weight: bold;
@@ -239,7 +239,7 @@ body {
   height: 80px;
   text-align: center;
 }
-.trailer-name {
+.cargo-cargo {
   color: #222;
   font-family: Arial, Tahoma;
   font-size: 28px;
@@ -271,8 +271,8 @@ body {
 .truck-odometer,
 .truck-speedRounded,
 .truck-cruiseControlSpeedRounded[data-value="0"],
-.trailer-mass,
-.trailer-name,
+.cargo-mass,
+.cargo-cargo,
 ._truckWearInfo,
 ._trailerWearInfo,
 .job-remainingTime,
@@ -295,8 +295,8 @@ body {
 .dashboard.game-connected.yes .truck-cruiseControlSpeedRounded:not([data-value="0"]) {
   visibility: visible;
 }
-.hasJob.yes .trailer-mass,
-.hasJob.yes .trailer-name,
+.hasJob.yes .cargo-mass,
+.hasJob.yes .cargo-cargo,
 .hasJob.yes .job-remainingTime,
 .hasJob.yes ._jobIncome,
 .hasJob.yes ._jobSource,
@@ -346,7 +346,7 @@ table._job td {
   left: 1810px;
 }
 .truck-wearSum,
-.trailer-wear {
+.cargo-damage {
   font-size: 44px;
   color: orangered;
 }

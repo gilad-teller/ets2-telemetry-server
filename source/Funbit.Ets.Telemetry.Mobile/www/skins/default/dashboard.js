@@ -34,7 +34,7 @@ Funbit.Ets.Telemetry.Dashboard.prototype.filter = function (data, utils) {
     // before it is displayed on the dashboard.
     // You may convert km/h to mph, kilograms to tons, etc.
 
-    data.hasJob = data.trailer.attached;
+    data.hasJob = data.trailer1.attached;
     // round truck speed
     data.truck.speedRounded = Math.abs(data.truck.speed > 0
         ? Math.floor(data.truck.speed)
@@ -43,7 +43,7 @@ Funbit.Ets.Telemetry.Dashboard.prototype.filter = function (data, utils) {
         ? Math.floor(data.truck.cruiseControlSpeed)
         : 0;
     // convert kg to t
-    data.trailer.mass = data.hasJob ? (Math.round(data.trailer.mass / 1000.0) + 't') : '';
+    data.cargo.mass = data.hasJob ? (Math.round(data.cargo.mass / 1000.0) + 't') : '';
     // format odometer data as: 00000.0
     data.truck.odometer = utils.formatFloat(data.truck.odometer, 1);
     // convert gear to readable format
@@ -61,7 +61,7 @@ Funbit.Ets.Telemetry.Dashboard.prototype.filter = function (data, utils) {
         data.truck.wearWheels * 100;
     wearSumPercent = Math.min(wearSumPercent, 100);
     data.truck.wearSum = Math.round(wearSumPercent) + '%';
-    data.trailer.wear = Math.round(data.trailer.wear * 100) + '%';
+    data.cargo.damage = Math.round(data.cargo.damage * 100) + '%';
     // return changed data to the core for rendering
     return data;
 };

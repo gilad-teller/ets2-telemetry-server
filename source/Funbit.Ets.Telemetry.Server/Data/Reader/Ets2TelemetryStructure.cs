@@ -6,7 +6,7 @@ using Microsoft.Owin.Security;
 namespace Funbit.Ets.Telemetry.Server.Data.Reader
 {
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
-    internal struct Ets2TelemetryStructure
+    public struct Ets2TelemetryStructure
     {
         const int GeneralStringSize = 64;
         private const int MaxTruckWheelCount = 16;
