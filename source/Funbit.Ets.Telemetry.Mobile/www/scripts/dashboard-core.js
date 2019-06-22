@@ -137,6 +137,7 @@
                 function Ets2Trailer() {
                     this.trailerNumber = 0;
                     this.attached = false;
+					this.present = false;
                     this.id = "";
                     this.name = "";
                     this.wearWheels = 0;

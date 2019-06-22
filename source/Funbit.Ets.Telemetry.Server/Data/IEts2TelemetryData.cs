@@ -726,6 +726,11 @@ namespace Funbit.Ets.Telemetry.Server.Data
         bool Attached { get; }
 
         /// <summary>
+        /// Does the trailer exist in the game world
+        /// </summary>
+        bool Present { get; }
+
+        /// <summary>
         /// Id of the trailer for internal use by code.
         /// Example: "derrick"
         /// </summary>

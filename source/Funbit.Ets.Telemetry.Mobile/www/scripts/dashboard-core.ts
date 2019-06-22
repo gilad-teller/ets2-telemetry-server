@@ -136,6 +136,7 @@ module Funbit.Ets.Telemetry {
     class Ets2Trailer {
         trailerNumber: number = 0;
         attached: boolean = false;
+		present: boolean = false;
         id: string = "";
         name: string = "";
         wearWheels: number = 0;

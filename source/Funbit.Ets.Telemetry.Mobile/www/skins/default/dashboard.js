@@ -34,7 +34,7 @@ Funbit.Ets.Telemetry.Dashboard.prototype.filter = function (data, utils) {
     // before it is displayed on the dashboard.
     // You may convert km/h to mph, kilograms to tons, etc.
 
-    data.hasJob = data.trailer1.attached;
+    data.hasJob = data.jobMarket != '';
     // round truck speed
     data.truck.speedRounded = Math.abs(data.truck.speed > 0
         ? Math.floor(data.truck.speed)
@@ -54,14 +54,20 @@ Funbit.Ets.Telemetry.Dashboard.prototype.filter = function (data, utils) {
     // convert rpm to rpm * 100
     data.truck.engineRpm = data.truck.engineRpm / 100;
     // calculate wear
-    var wearSumPercent = data.truck.wearEngine * 100 +
-        data.truck.wearTransmission * 100 +
-        data.truck.wearCabin * 100 +
-        data.truck.wearChassis * 100 +
-        data.truck.wearWheels * 100;
+    var wearSumPercent = data.truck.wearChassis * 100;
     wearSumPercent = Math.min(wearSumPercent, 100);
     data.truck.wearSum = Math.round(wearSumPercent) + '%';
     data.cargo.damage = Math.round(data.cargo.damage * 100) + '%';
+	
+	var connectedTrailers = 0;
+	wearSumPercent = 0;
+	for (var i = 1; i <= data.game.maxTrailerCount; i++) {
+		if (data['trailer' + i].present) {
+			connectedTrailers++;
+			wearSumPercent += data['trailer' + i].wearChassis * 100;
+		}
+	}
+	data.job.trailerDamagePercent = Math.floor(wearSumPercent / connectedTrailers) + '%';
     // return changed data to the core for rendering
     return data;
 };

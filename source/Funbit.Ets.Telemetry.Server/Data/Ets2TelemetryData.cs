@@ -293,7 +293,10 @@ namespace Funbit.Ets.Telemetry.Server.Data
 
         public int TrailerNumber => _trailerNumber + 1;
 
-        public bool Attached => _rawData.Struct.trailer_attached != 0;
+        public bool Attached => _rawData.Struct.trailer0attached != 0 && 
+                                (byte)_rawData.Struct.GetType().GetField($"trailer{_trailerNumber}attached").GetValue(_rawData.Struct) != 0;
+
+        public bool Present => !string.IsNullOrEmpty(Ets2TelemetryData.BytesToString((byte[])_rawData.Struct.GetType().GetField($"trailer{_trailerNumber}id").GetValue(_rawData.Struct)));
 
         // ReSharper disable once PossibleNullReferenceException
         public string Id => Ets2TelemetryData.BytesToString((byte[])_rawData.Struct.GetType().GetField($"trailer{_trailerNumber}id").GetValue(_rawData.Struct));
