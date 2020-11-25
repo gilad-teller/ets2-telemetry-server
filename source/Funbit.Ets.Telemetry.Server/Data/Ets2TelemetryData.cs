@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Text;
 using Funbit.Ets.Telemetry.Server.Data.Reader;
@@ -10,7 +11,7 @@ namespace Funbit.Ets.Telemetry.Server.Data
     class Ets2TelemetryData : IEts2TelemetryData
     {
         Box<Ets2TelemetryStructure> _rawData;
-        
+
         public void Update(Ets2TelemetryStructure rawData)
         {
             _rawData = new Box<Ets2TelemetryStructure>(rawData);
@@ -36,17 +37,53 @@ namespace Funbit.Ets.Telemetry.Server.Data
 
         public IEts2Game Game => new Ets2Game(_rawData);
         public IEts2Truck Truck => new Ets2Truck(_rawData);
+        public IEts2Shifter Shifter => new Ets2Shifter(_rawData);
+        public int TrailerCount
+        {
+            get
+            {
+                for (int i = 9; i >= 0; i--)
+                    if (!string.IsNullOrEmpty(Ets2TelemetryData.BytesToString((byte[])_rawData.Struct.GetType().GetField($"trailer{i}id").GetValue(_rawData.Struct))))
+                        return i + 1;
+                return 0;
+            }
+        }
+        public IEts2Trailer[] Trailers
+        {
+            get
+            {
+                IEts2Trailer[] array;
+                if (TrailerCount == 0)
+                {
+                    array = new IEts2Trailer[1];
+                    array[0] = new Ets2Trailer(_rawData, 0);
+                    return array;
+                }
+                else
+                {
+                    array = new IEts2Trailer[TrailerCount];
+                    for (int i = 0; i < array.Length; i++)
+                        array[i] = new Ets2Trailer(_rawData, i);
 
-        public IEts2Trailer Trailer1 => new Ets2Trailer(_rawData, 0);
-        public IEts2Trailer Trailer2 => new Ets2Trailer(_rawData, 1);
-        public IEts2Trailer Trailer3 => new Ets2Trailer(_rawData, 2);
-        public IEts2Trailer Trailer4 => new Ets2Trailer(_rawData, 3);
-        public IEts2Trailer Trailer5 => new Ets2Trailer(_rawData, 4);
-        public IEts2Trailer Trailer6 => new Ets2Trailer(_rawData, 5);
-        public IEts2Trailer Trailer7 => new Ets2Trailer(_rawData, 6);
-        public IEts2Trailer Trailer8 => new Ets2Trailer(_rawData, 7);
-        public IEts2Trailer Trailer9 => new Ets2Trailer(_rawData, 8);
-        public IEts2Trailer Trailer10 => new Ets2Trailer(_rawData, 9);
+                }
+                return array;
+            }
+        }
+        public IEts2Trailer Trailer
+        {
+            get
+            {
+                IEts2Trailer t = new Ets2Trailer(_rawData, 0);
+                if (TrailerCount != 0)
+                {
+                    float m = 0f;
+                    for (int i = 0; i < TrailerCount; i++)
+                        m += Trailers[0].Wear;
+                    t.Wear = (float)m / TrailerCount;
+                }
+                return t;
+            }
+        }
         public IEts2Job Job => new Ets2Job(_rawData);
         public IEts2Cargo Cargo => new Ets2Cargo(_rawData);
         public IEts2Navigation Navigation => new Ets2Navigation(_rawData);
@@ -77,7 +114,7 @@ namespace Funbit.Ets.Telemetry.Server.Data
         public DateTime NextRestStopTime => Ets2TelemetryData.MinutesToDate(_rawData.Struct.nextRestStop);
         public string Version => $"{_rawData.Struct.ets2_version_major}.{_rawData.Struct.ets2_version_minor}";
         public string TelemetryPluginVersion => _rawData.Struct.ets2_telemetry_plugin_revision.ToString();
-
+        public string TelemetryServerVersion => Assembly.GetEntryAssembly().GetName().Version.ToString();
         public int MaxTrailerCount => _rawData.Struct.maxTrailerCount;
     }
 
@@ -138,16 +175,17 @@ namespace Funbit.Ets.Telemetry.Server.Data
         /// Cruise control speed in km/h.
         /// </summary>
         public float CruiseControlSpeed => _rawData.Struct.cruiseControlSpeed * 3.6f;
-
         public bool CruiseControlOn => _rawData.Struct.cruiseControl != 0;
         public float Odometer => _rawData.Struct.truckOdometer;
-        public int Gear => _rawData.Struct.gear;
-        public int DisplayedGear => _rawData.Struct.displayedGear;
+
+        public string ShifterType => Ets2TelemetryData.BytesToString(_rawData.Struct.shifterType);
         public int ForwardGears => (int)_rawData.Struct.gearsForward;
         public int ReverseGears => (int)_rawData.Struct.gearsReverse;
-        public string ShifterType => Ets2TelemetryData.BytesToString(_rawData.Struct.shifterType);
+        public int Gear => _rawData.Struct.gear;
+        public int DisplayedGear => _rawData.Struct.displayedGear;
         public float EngineRpm => _rawData.Struct.engineRpm;
         public float EngineRpmMax => _rawData.Struct.engineRpmMax;
+
         public float Fuel => _rawData.Struct.fuel;
         public float FuelCapacity => _rawData.Struct.fuelCapacity;
         public float FuelAverageConsumption => _rawData.Struct.fuelAvgConsumption;
@@ -166,12 +204,6 @@ namespace Funbit.Ets.Telemetry.Server.Data
         public float GameThrottle => _rawData.Struct.gameThrottle;
         public float GameBrake => _rawData.Struct.gameBrake;
         public float GameClutch => _rawData.Struct.gameClutch;
-        public int ShifterSlot => (int)_rawData.Struct.shifterSlot;
-
-        //public int ShifterToggle
-        //{
-        //    get { return _rawData.Struct.shifterToggle; }
-        //}
 
         public bool EngineOn => _rawData.Struct.engineEnabled != 0;
         public bool ElectricOn => _rawData.Struct.electricEnabled != 0;
@@ -250,30 +282,328 @@ namespace Funbit.Ets.Telemetry.Server.Data
 
         public string LicensePlateCountry => Ets2TelemetryData.BytesToString(_rawData.Struct.truckLicensePlateCountry);
 
-        /*
-        public IEts2GearSlot[] GearSlots
-        {
-            get
-            {
-                var array = new IEts2GearSlot[_rawData.Struct.selectorCount];
-                for (int i = 0; i < array.Length; i++)
-                    array[i] = new Ets2GearSlot(_rawData, i);
-                return array;
-            }
-        }
-                
+        public int WheelCount => (int)_rawData.Struct.truckWheelCount;
+
         public IEts2Wheel[] Wheels
         {
             get
             {
-                var array = new IEts2Wheel[_rawData.Struct.wheelCount];
+                var array = new IEts2Wheel[_rawData.Struct.truckWheelCount];
                 for (int i = 0; i < array.Length; i++)
-                    array[i] = new Ets2Wheel(_rawData, i);
+                    array[i] = new Ets2TruckWheel(_rawData, i);
+                Array.Sort(array, new Ets2WheelSorter());
                 return array;
             }
         }
-        */
     }
+
+    class Ets2Shifter : IEts2Shifter
+    {
+        readonly Box<Ets2TelemetryStructure> _rawData;
+        public Ets2Shifter(Box<Ets2TelemetryStructure> rawData)
+        {
+            _rawData = rawData;
+        }
+
+        public string Type => Ets2TelemetryData.BytesToString(_rawData.Struct.shifterType);
+        public int ForwardGears => (int)_rawData.Struct.gearsForward;
+        public string[] ForwardGearNames
+        {
+            get
+            {
+                if (ForwardGears == 0) return null;
+                string[] fwGears = new string[ForwardGears + 1];
+                switch (ForwardGears)
+                {
+                    case 18:
+                        fwGears = (Type == "hshifter")
+                            ? new string[] { "N", "CL", "CH", "1L", "1H", "2L", "2H", "3L", "3H", "4L", "4H", "5L", "5H", "6L", "6H", "7L", "7H", "8L", "8H" }
+                            : new string[] { "N", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18" };
+                        break;
+                    case 16:
+                        fwGears = (Type == "hshifter")
+                            ? new string[] { "N", "1L", "1H", "2L", "2H", "3L", "3H", "4L", "4H", "5L", "5H", "6L", "6H", "7L", "7H", "8L", "8H" }
+                            : new string[] { "N", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16" };
+                        break;
+                    case 14:
+                        fwGears = (Type == "hshifter")
+                            ? new string[] { "N", "CL", "CH", "1", "2", "3", "4", "5L", "5H", "6L", "6H", "7L", "7H", "8L", "8H" }
+                            : new string[] { "N", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14" };
+                        break;
+                    case 13:
+                        fwGears = (Type == "hshifter")
+                            ? new string[] { "N", "L", "1", "2", "3", "4", "5L", "5H", "6L", "6H", "7L", "7H", "8L", "8H" }
+                            : new string[] { "N", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13" };
+                        break;
+                    case 12:
+                        fwGears = (Type == "hshifter")
+                            ? new string[] { "N", "1", "2", "3", "4", "5L", "5H", "6L", "6H", "7L", "7H", "8L", "8H" }
+                            : new string[] { "N", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12" };
+                        break;
+                    default:
+                        fwGears[0] = "N";
+                        for (int i = 1; i < fwGears.Length; i++)
+                        {
+                            fwGears[i] = i.ToString();
+                        }
+                        break;
+                }
+                return fwGears;
+            }
+        }
+        public int ReverseGears => _rawData.Struct.gearsReverse;
+        public string[] ReverseGearNames
+        {
+            get
+            {
+                if (ReverseGears == 0) return null;
+                string[] rvGears = new string[ReverseGears + 1];
+                switch (ReverseGears)
+                {
+                    case 4:
+                        rvGears = (Type == "hshifter")
+                            ? new string[] { "N", "R1L", "R1H", "R2L", "R2H" }
+                            : new string[] { "N", "R1", "R2", "R3", "R4" };
+                        break;
+                    case 3:
+                        rvGears = (Type == "hshifter")
+                            ? new string[] { "N", "RL", "RH", "RO" }
+                            : new string[] { "N", "R1", "R2", "R3" };
+                        break;
+                    case 2:
+                        rvGears = (Type == "hshifter")
+                            ? new string[] { "N", "RL", "RH" }
+                            : new string[] { "N", "R1", "R2" };
+                        break;
+                    case 1:
+                        rvGears = new string[] { "N", "R" };
+                        break;
+                }
+
+                return rvGears;
+            }
+        }
+
+        public float DifferentialRatio => (float)_rawData.Struct.gearDifferential;
+        public float[] ForwardGearRatios
+        {
+            get
+            {
+                if (ForwardGears == 0) return null;
+                float[] array = _rawData.Struct.gearRatiosForward;
+                Array.Resize(ref array, ForwardGears);
+                return array;
+            }
+        }
+        public float[] ReverseGearRatios
+        {
+            get
+            {
+                if (ReverseGears == 0) return null;
+                float[] array = _rawData.Struct.gearRatiosReverse;
+                Array.Resize(ref array, ReverseGears);
+                return array;
+            }
+        }
+        public double TyreCircumference =>
+                _rawData.Struct.truckWheelPowered == null ? 0 :
+                ((_rawData.Struct.truckWheelCount > 4) ?
+                (_rawData.Struct.truckWheelPowered[4] == 1) ?
+                    _rawData.Struct.truckWheelRadius[4] :
+                    _rawData.Struct.truckWheelRadius[2] :
+                    _rawData.Struct.truckWheelRadius[2]) * 2 * Math.PI;
+        public int[] ForwardSpeedAt1500Rpm
+        {
+            get
+            {
+                if (ForwardGears == 0) return null;
+                int[] array = new int[ForwardGears + 1];
+                for (int i = 1; i < array.Length; i++)
+                {
+                    array[i] = (int)Math.Round(90 * TyreCircumference / (DifferentialRatio * ForwardGearRatios[i - 1]));
+                }
+                return array;
+            }
+        }
+        public int[] ReverseSpeedAt1500Rpm
+        {
+            get
+            {
+                if (ReverseGears == 0) return null;
+                int[] array = new int[ReverseGears + 1];
+                for (int i = 1; i < array.Length; i++)
+                {
+                    array[i] = (int)Math.Round(90 * TyreCircumference / (DifferentialRatio * ReverseGearRatios[i - 1]));
+                }
+                return array;
+            }
+        }
+        public int[] ForwardRpmAtCurrentSpeed
+        {
+            get
+            {
+                if (ForwardGears == 0) return null;
+                int[] array = new int[ForwardGears + 1];
+                for (int i = 1; i < array.Length; i++)
+                {
+                    array[i] = (int)Math.Round(60 * Math.Abs(_rawData.Struct.speed) * DifferentialRatio * ForwardGearRatios[i - 1] / TyreCircumference);
+                }
+                return array;
+            }
+        }
+        public int[] ReverseRpmAtCurrentSpeed
+        {
+            get
+            {
+                if (ReverseGears == 0) return null;
+                int[] array = new int[ReverseGears + 1];
+                for (int i = 1; i < array.Length; i++)
+                {
+                    array[i] = (int)Math.Round(60 * Math.Abs(_rawData.Struct.speed) * DifferentialRatio * ReverseGearRatios[i - 1] / TyreCircumference);
+                }
+                return array;
+            }
+        }
+
+        //public uint[] HshifterPosition => _rawData.Struct.hshifterPosition;
+        //public uint[] HshifterBitmask => _rawData.Struct.hshifterBitmask;
+        //public int[] HshifterResulting => _rawData.Struct.hshifterResulting;
+
+        public int SelectorCount => Type != "hshifter" ? 1 : (int)Math.Pow(2, _rawData.Struct.selectorCount);
+        public int SlotCount => _rawData.Struct.hshifterPosition == null ? 0 : Type != "hshifter" ? 1 : (int)_rawData.Struct.hshifterPosition.Max() + 1;
+        public IEts2ShifterSlot[] Slots
+        {
+            get
+            {
+                if (SlotCount == 0 || ReverseGearNames == null) return null;
+                IEts2ShifterSlot[] slots;
+                if (Type == "hshifter")
+                {
+                    slots = new IEts2ShifterSlot[SlotCount];
+                    for (int slot = 0; slot < slots.Length; slot++)
+                        slots[slot] = new Ets2ShifterSlot(_rawData, SelectorCount, slot, ForwardGearNames, ReverseGearNames);
+                }
+                else
+                {
+                    slots = new IEts2ShifterSlot[1];
+                    slots[0] = new Ets2ShifterSlot(_rawData, SelectorCount, 0, ForwardGearNames, ReverseGearNames);
+                    slots[0].Seletors[0].Gear = Gear;
+                    slots[0].Seletors[0].GearName = "Unknow";
+                    if (Gear < 0)
+                    {
+                        if (Math.Abs(Gear) < ReverseGearNames.Length)
+                            slots[0].Seletors[0].GearName = ReverseGearNames[Math.Abs(Gear)];
+                    }
+                    else
+                    {
+                        if (Gear < ForwardGearNames.Length)
+                            slots[0].Seletors[0].GearName = ForwardGearNames[Gear];
+
+                    }
+                }
+                return slots;
+            }
+        }
+
+        public int Gear => _rawData.Struct.gear;
+        public int DisplayedGear => _rawData.Struct.displayedGear;
+        public string DisplayedGearName => (DisplayedGear < 0)
+            ? ReverseGearNames == null ? "" : ReverseGearNames[Math.Abs(DisplayedGear)]
+            : ForwardGearNames == null ? "" : ForwardGearNames[DisplayedGear];
+        public float GearRatio => (Gear == 0) ? 0 : (Gear < 0)
+                ? (float)_rawData.Struct.gearRatiosReverse[Math.Abs(Gear) - 1]
+                : (float)_rawData.Struct.gearRatiosForward[Gear - 1];
+        public int Slot => Type != "hshifter" ? 0 : (int)_rawData.Struct.shifterSlot;
+        public int Selector
+        {
+            get
+            {
+                int selectors = 0;
+                if (Type == "hshifter")
+                {
+                    if (_rawData.Struct.shifterToggle != null)
+                        for (int i = 0; i < _rawData.Struct.shifterToggle.Length; i++)
+                            selectors += (int)Math.Pow(2, (double)i) * ((int)Math.Pow(2, (double)_rawData.Struct.shifterToggle[i]) - 1);
+                    if (SelectorCount > 0 && selectors >= SelectorCount)
+                        selectors = SelectorCount - 1;
+                }
+                return selectors;
+            }
+        }
+        public int BestGear   // Needs a lot of work.
+        {
+            get
+            {
+                if (_rawData.Struct.speed == 0) return 0;
+                int r = 0;
+                int gap = 1500;
+                int[] array;
+                if (_rawData.Struct.speed > 0) { array = ForwardRpmAtCurrentSpeed; } else { array = ReverseRpmAtCurrentSpeed; }
+                for (int i = 1; i < array.Length; i++)
+                {
+                    if (array[i] < 0)
+                    {
+                        if (gap > Math.Abs(array[i] + 1300))
+                        {
+                            r = -i;
+                            gap = Math.Abs(array[i] + 1300);
+                        }
+                    }
+                    else
+                    {
+                        if (gap > Math.Abs(array[i] - 1300))
+                        {
+                            r = i;
+                            gap = Math.Abs(array[i] - 1300);
+                        }
+
+                    }
+                }
+
+                return r;
+            }
+        }
+        public string BestGearName => ReverseGearNames == null ? "" : BestGear < 0 ? ReverseGearNames[Math.Abs(BestGear)] : ForwardGearNames[BestGear];
+    }
+
+    class Ets2ShifterSlot : IEts2ShifterSlot
+    {
+        public Ets2ShifterSlot(Box<Ets2TelemetryStructure> rawData, int selectorCount, int slot, string[] fwGearNames, string[] rvGearNames)
+        {
+            int i = selectorCount * slot;
+            Slot = (int)rawData.Struct.hshifterPosition[i];
+            Seletors = new IEts2ShifterSelector[selectorCount];
+            for (int selector = 0; selector < Seletors.Length; selector++)
+                Seletors[selector] = new Ets2ShifterSelector(rawData, selectorCount, slot, selector, fwGearNames, rvGearNames);
+        }
+        public int Slot { get; private set; }
+        public IEts2ShifterSelector[] Seletors { get; private set; }
+    }
+    class Ets2ShifterSelector : IEts2ShifterSelector
+    {
+        public Ets2ShifterSelector(Box<Ets2TelemetryStructure> rawData, int selectorCount, int slot, int selector, string[] fwGearNames, string[] rvGearNames)
+        {
+            int i = selectorCount * slot + selector;
+            Selector = (int)rawData.Struct.hshifterBitmask[i];
+            Gear = rawData.Struct.hshifterResulting[i];
+            GearName = "Unknow";
+            if (Gear < 0)
+            {
+                if (Math.Abs(Gear) < rvGearNames.Length)
+                    GearName = rvGearNames[Math.Abs(Gear)];
+            }
+            else
+            {
+                if (Gear < fwGearNames.Length)
+                    GearName = fwGearNames[Gear];
+
+            }
+        }
+        public int Selector { get; private set; }
+        public int Gear { get; set; }
+        public string GearName { get; set; }
+    }
+
 
     class Ets2Trailer : IEts2Trailer
     {
@@ -291,9 +621,9 @@ namespace Funbit.Ets.Telemetry.Server.Data
             _trailerNumber = trailerNumber;
         }
 
-        public int TrailerNumber => _trailerNumber + 1;
+        public int Number => _trailerNumber;
 
-        public bool Attached => _rawData.Struct.trailer0attached != 0 && 
+        public bool Attached => _rawData.Struct.trailer0attached != 0 &&
                                 (byte)_rawData.Struct.GetType().GetField($"trailer{_trailerNumber}attached").GetValue(_rawData.Struct) != 0;
 
         public bool Present => !string.IsNullOrEmpty(Ets2TelemetryData.BytesToString((byte[])_rawData.Struct.GetType().GetField($"trailer{_trailerNumber}id").GetValue(_rawData.Struct)));
@@ -305,10 +635,17 @@ namespace Funbit.Ets.Telemetry.Server.Data
         public string Name => Ets2TelemetryData.BytesToString((byte[])_rawData.Struct.GetType().GetField($"trailer{_trailerNumber}name").GetValue(_rawData.Struct));
 
         // ReSharper disable once PossibleNullReferenceException
-        public float WearWheels => (float) _rawData.Struct.GetType().GetField($"trailer{_trailerNumber}wearWheels").GetValue(_rawData.Struct);
+        public float WearWheels => (float)_rawData.Struct.GetType().GetField($"trailer{_trailerNumber}wearWheels").GetValue(_rawData.Struct);
 
         // ReSharper disable once PossibleNullReferenceException
         public float WearChassis => (float)_rawData.Struct.GetType().GetField($"trailer{_trailerNumber}wearChassis").GetValue(_rawData.Struct);
+
+        private float _wear;
+        public float Wear
+        {
+            get => (_wear == 0) ? Math.Max(WearWheels, WearChassis) : _wear;
+            set => _wear = value;
+        }
 
         // ReSharper disable once PossibleNullReferenceException
         public float CargoDamage => (float)_rawData.Struct.GetType().GetField($"trailer{_trailerNumber}cargoDamage").GetValue(_rawData.Struct);
@@ -350,23 +687,59 @@ namespace Funbit.Ets.Telemetry.Server.Data
             .GetField($"trailer{_trailerNumber}chainType").GetValue(_rawData.Struct));
 
         public IEts2Placement Placement => new Ets2Placement(
-            _rawData.Struct.trailer0worldX,
-            _rawData.Struct.trailer0worldY,
-            _rawData.Struct.trailer0worldZ,
-            _rawData.Struct.trailer0rotationX,
-            _rawData.Struct.trailer0rotationY,
-            _rawData.Struct.trailer0rotationZ);
+            (double)_rawData.Struct.GetType().GetField($"trailer{_trailerNumber}worldX").GetValue(_rawData.Struct),
+            (double)_rawData.Struct.GetType().GetField($"trailer{_trailerNumber}worldY").GetValue(_rawData.Struct),
+            (double)_rawData.Struct.GetType().GetField($"trailer{_trailerNumber}worldZ").GetValue(_rawData.Struct),
+            (double)_rawData.Struct.GetType().GetField($"trailer{_trailerNumber}rotationX").GetValue(_rawData.Struct),
+            (double)_rawData.Struct.GetType().GetField($"trailer{_trailerNumber}rotationY").GetValue(_rawData.Struct),
+            (double)_rawData.Struct.GetType().GetField($"trailer{_trailerNumber}rotationZ").GetValue(_rawData.Struct));
+        public float Distance
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(Ets2TelemetryData.BytesToString((byte[])_rawData.Struct.GetType().GetField($"trailer{_trailerNumber}id").GetValue(_rawData.Struct))))
+                    return 0;
+                return (float)Math.Sqrt(
+                    Math.Pow((_rawData.Struct.coordinateX - (double)_rawData.Struct.GetType().GetField($"trailer{_trailerNumber}worldX").GetValue(_rawData.Struct)), 2) +
+                    Math.Pow((_rawData.Struct.coordinateY - (double)_rawData.Struct.GetType().GetField($"trailer{_trailerNumber}worldY").GetValue(_rawData.Struct)), 2) +
+                    Math.Pow((_rawData.Struct.coordinateZ - (double)_rawData.Struct.GetType().GetField($"trailer{_trailerNumber}worldZ").GetValue(_rawData.Struct)), 2));
+            }
+        }
+        public IEts2Vector Hook => new Ets2Vector(
+            (float)_rawData.Struct.GetType().GetField($"trailer{_trailerNumber}hookPositionX").GetValue(_rawData.Struct),
+            (float)_rawData.Struct.GetType().GetField($"trailer{_trailerNumber}hookPositionY").GetValue(_rawData.Struct),
+            (float)_rawData.Struct.GetType().GetField($"trailer{_trailerNumber}hookPositionZ").GetValue(_rawData.Struct));
+
+        public uint WheelCount => (uint)_rawData.Struct.GetType().GetField($"trailer{_trailerNumber}wheelCount").GetValue(_rawData.Struct);
+
+        public IEts2Wheel[] Wheels
+        {
+            get
+            {
+                uint wheelCount = (uint)_rawData.Struct.GetType().GetField($"trailer{_trailerNumber}wheelCount").GetValue(_rawData.Struct);
+                var array = new IEts2Wheel[wheelCount];
+                if (wheelCount > 0)
+                {
+                    for (int i = 0; i < array.Length; i++)
+                        array[i] = new Ets2TrailerWheel(_rawData, _trailerNumber, i);
+                    Ets2WheelSorter sorter = new Ets2WheelSorter();
+                    Array.Sort(array, sorter);
+                }
+                return array;
+            }
+        }
+
     }
 
     class Ets2Navigation : IEts2Navigation
     {
         readonly Box<Ets2TelemetryStructure> _rawData;
-        
+
         public Ets2Navigation(Box<Ets2TelemetryStructure> rawData)
         {
             _rawData = rawData;
         }
-        
+
         public DateTime EstimatedTime => Ets2TelemetryData.SecondsToDate((int)_rawData.Struct.navigationTime);
         public int EstimatedDistance => (int)_rawData.Struct.navigationDistance;
         public int SpeedLimit => _rawData.Struct.navigationSpeedLimit > 0 ? (int)Math.Round(_rawData.Struct.navigationSpeedLimit * 3.6f) : 0;
@@ -383,7 +756,7 @@ namespace Funbit.Ets.Telemetry.Server.Data
 
         public int Income => (int)_rawData.Struct.jobIncome;
         public DateTime DeadlineTime => Ets2TelemetryData.MinutesToDate((int)_rawData.Struct.jobDeadline);
-        public DateTime RemainingTime 
+        public DateTime RemainingTime
         {
             get
             {
@@ -431,7 +804,7 @@ namespace Funbit.Ets.Telemetry.Server.Data
         }
 
         public string FineOffense => Ets2TelemetryData.BytesToString(_rawData.Struct.fineOffence);
-        public int FineAmount => (int) _rawData.Struct.fineAmount;
+        public int FineAmount => (int)_rawData.Struct.fineAmount;
         public bool Fined => _rawData.Struct.fined != 0;
     }
 
@@ -484,7 +857,7 @@ namespace Funbit.Ets.Telemetry.Server.Data
         public string TargetName => Ets2TelemetryData.BytesToString(_rawData.Struct.ferryTargetName);
         public string SourceId => Ets2TelemetryData.BytesToString(_rawData.Struct.ferrySourceId);
         public string TargetId => Ets2TelemetryData.BytesToString(_rawData.Struct.ferryTargetId);
-        public int PayAmount => (int) _rawData.Struct.ferryPayAmount;
+        public int PayAmount => (int)_rawData.Struct.ferryPayAmount;
     }
 
     class Ets2TrainGameplayEvent : IEts2TrainGameplayEvent
@@ -503,47 +876,72 @@ namespace Funbit.Ets.Telemetry.Server.Data
         public string TargetId => Ets2TelemetryData.BytesToString(_rawData.Struct.trainTargetId);
         public int PayAmount => (int)_rawData.Struct.trainPayAmount;
     }
-
-    /*
-    class Ets2Wheel : IEts2Wheel
+    public class Ets2WheelSorter : IComparer<IEts2Wheel>
     {
-        public Ets2Wheel(Box<Ets2TelemetryStructure> rawData, int wheelIndex)
+        public int Compare(IEts2Wheel x, IEts2Wheel y) => (int)(x.Position.Z - y.Position.Z);
+    }
+    class Ets2TruckWheel : IEts2Wheel
+    {
+        public Ets2TruckWheel(Box<Ets2TelemetryStructure> rawData, int wheelIndex)
         {
-            Simulated = rawData.Struct.wheelSimulated[wheelIndex] != 0;
-            Steerable = rawData.Struct.wheelSteerable[wheelIndex] != 0;
-            Radius = rawData.Struct.wheelRadius[wheelIndex];
+            Simulated = rawData.Struct.truckWheelSimulated[wheelIndex] != 0;
+            Steerable = rawData.Struct.truckWheelSteerable[wheelIndex] != 0;
+            Radius = rawData.Struct.truckWheelRadius[wheelIndex];
             Position = new Ets2Vector(
                 rawData.Struct.wheelPositionX[wheelIndex],
                 rawData.Struct.wheelPositionY[wheelIndex],
                 rawData.Struct.wheelPositionZ[wheelIndex]);
-            Powered = rawData.Struct.wheelPowered[wheelIndex] != 0;
-            Liftable = rawData.Struct.wheelLiftable[wheelIndex] != 0;
+            Powered = rawData.Struct.truckWheelPowered[wheelIndex] != 0;
+            Liftable = rawData.Struct.truckWheelLiftable[wheelIndex] != 0;
+            Lifted = rawData.Struct.truck_wheelLift[wheelIndex] != 0;
         }
 
         public bool Simulated { get; private set; }
         public bool Steerable { get; private set; }
         public bool Powered { get; private set; }
         public bool Liftable { get; private set; }
+        public bool Lifted { get; private set; }
         public float Radius { get; private set; }
         public IEts2Vector Position { get; private set; }
     }
-    
-    class Ets2GearSlot : IEts2GearSlot
+
+    class Ets2TrailerWheel : IEts2Wheel
     {
-        public Ets2GearSlot(Box<Ets2TelemetryStructure> rawData, int slotIndex)
+        public Ets2TrailerWheel(Box<Ets2TelemetryStructure> rawData, int trailerNumber, int wheelIndex)
         {
-            Gear = rawData.Struct.slotGear[slotIndex];
-            HandlePosition = (int)rawData.Struct.slotHandlePosition[slotIndex];
-            SlotSelectors = (int)rawData.Struct.slotSelectors[slotIndex];
+            byte[] b;
+            float[] f;
+            b = (byte[])rawData.Struct.GetType().GetField($"trailer{trailerNumber}wheelSimulated").GetValue(rawData.Struct);
+            Simulated = b[wheelIndex] != 0;
+            b = (byte[])rawData.Struct.GetType().GetField($"trailer{trailerNumber}wheelSteerable").GetValue(rawData.Struct);
+            Steerable = b[wheelIndex] != 0;
+            f = (float[])rawData.Struct.GetType().GetField($"trailer{trailerNumber}wheelRadius").GetValue(rawData.Struct);
+            Radius = f[wheelIndex];
+            float[] pX = (float[])rawData.Struct.GetType().GetField($"trailer{trailerNumber}wheelPositionX").GetValue(rawData.Struct);
+            float[] pY = (float[])rawData.Struct.GetType().GetField($"trailer{trailerNumber}wheelPositionY").GetValue(rawData.Struct);
+            float[] pZ = (float[])rawData.Struct.GetType().GetField($"trailer{trailerNumber}wheelPositionZ").GetValue(rawData.Struct);
+            Position = new Ets2Vector(
+                pX[wheelIndex],
+                pY[wheelIndex],
+                pZ[wheelIndex]);
+            b = (byte[])rawData.Struct.GetType().GetField($"trailer{trailerNumber}wheelPowered").GetValue(rawData.Struct);
+            Powered = b[wheelIndex] != 0;
+            b = (byte[])rawData.Struct.GetType().GetField($"trailer{trailerNumber}wheelLiftable").GetValue(rawData.Struct);
+            Liftable = b[wheelIndex] != 0;
+            f = (float[])rawData.Struct.GetType().GetField($"trailer{trailerNumber}wheelLift").GetValue(rawData.Struct);
+            Lifted = f[wheelIndex] != 0;
         }
 
-        public int Gear { get; private set; }
-        public int HandlePosition { get; private set; }
-        public int SlotSelectors { get; private set; }
+        public bool Simulated { get; private set; }
+        public bool Steerable { get; private set; }
+        public bool Powered { get; private set; }
+        public bool Liftable { get; private set; }
+        public bool Lifted { get; private set; }
+        public float Radius { get; private set; }
+        public IEts2Vector Position { get; private set; }
     }
-    */
 
-    class Box<T> where T : struct 
+    class Box<T> where T : struct
     {
         public T Struct { get; set; }
 

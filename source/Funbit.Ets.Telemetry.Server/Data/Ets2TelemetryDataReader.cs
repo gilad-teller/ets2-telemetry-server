@@ -10,7 +10,7 @@ namespace Funbit.Ets.Telemetry.Server.Data
         /// </summary>
         const string Ets2TelemetryMappedFileName = "Local\\SimTelemetrySCS";
 
-        readonly SharedProcessMemory<Ets2TelemetryStructure> _sharedMemory = 
+        readonly SharedProcessMemory<Ets2TelemetryStructure> _sharedMemory =
             new SharedProcessMemory<Ets2TelemetryStructure>(Ets2TelemetryMappedFileName);
 
         readonly Ets2TelemetryData _data = new Ets2TelemetryData();
@@ -34,7 +34,7 @@ namespace Funbit.Ets.Telemetry.Server.Data
                 return _data;
             }
         }
-        
+
         public void Dispose()
         {
             _sharedMemory?.Dispose();

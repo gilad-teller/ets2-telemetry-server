@@ -10,61 +10,31 @@ namespace Funbit.Ets.Telemetry.Server.Data
         /// Game information.
         /// </summary>
         IEts2Game Game { get; }
-        
+
         /// <summary>
         /// Truck information.
         /// </summary>
         IEts2Truck Truck { get; }
 
         /// <summary>
-        /// Trailer 1 information.
+        /// Truck information.
         /// </summary>
-        IEts2Trailer Trailer1 { get; }
+        IEts2Shifter Shifter { get; }
 
         /// <summary>
-        /// Trailer 2 information.
+        /// Number of trailers present.
         /// </summary>
-        IEts2Trailer Trailer2 { get; }
+        int TrailerCount { get; }
 
         /// <summary>
-        /// Trailer 3 information.
+        /// Trailers  information.
         /// </summary>
-        IEts2Trailer Trailer3 { get; }
+        IEts2Trailer[] Trailers { get; }
 
         /// <summary>
-        /// Trailer 4 information.
+        /// For compability with 3.x, trailer[0]  information.
         /// </summary>
-        IEts2Trailer Trailer4 { get; }
-
-        /// <summary>
-        /// Trailer 5 information.
-        /// </summary>
-        IEts2Trailer Trailer5 { get; }
-
-        /// <summary>
-        /// Trailer 6 information.
-        /// </summary>
-        IEts2Trailer Trailer6 { get; }
-
-        /// <summary>
-        /// Trailer 7 information.
-        /// </summary>
-        IEts2Trailer Trailer7 { get; }
-
-        /// <summary>
-        /// Trailer 8 information.
-        /// </summary>
-        IEts2Trailer Trailer8 { get; }
-
-        /// <summary>
-        /// Trailer 9 information.
-        /// </summary>
-        IEts2Trailer Trailer9 { get; }
-
-        /// <summary>
-        /// Trailer 10 information.
-        /// </summary>
-        IEts2Trailer Trailer10 { get; }
+        IEts2Trailer Trailer { get; }
 
         /// <summary>
         /// Job information.
@@ -126,6 +96,11 @@ namespace Funbit.Ets.Telemetry.Server.Data
         /// Example: "1.10"
         /// </summary>
         string Version { get; }
+        /// <summary>
+        /// Current version of the server.
+        /// Example: "4.1.0.0"
+        /// </summary>
+        string TelemetryServerVersion { get; }
 
         /// <summary>
         /// When the fatigue simulation is disabled, the behavior of this channel
@@ -199,34 +174,6 @@ namespace Funbit.Ets.Telemetry.Server.Data
     public interface IEts2Truck
     {
         /// <summary>
-        /// Current truck speed in km/h.
-        /// Example: 50.411231
-        /// </summary>
-        float Speed { get; }
-
-        /// <summary>
-        /// Represents vehicle space linear acceleration of 
-        /// the truck measured in meters per second^2.
-        /// Example: { "x": 0.046569, "y": -0.00116, "z": -1.03676 }
-        /// </summary>
-        IEts2Vector Acceleration { get; }
-        /// <summary>
-        /// Current truck placement in the game world.
-        /// </summary>
-        IEts2Placement Placement { get; }
-        
-        /// <summary>
-        /// The value of the odometer in km.
-        /// Example: 105809.25
-        /// </summary>
-        float Odometer { get; }
-        /// <summary>
-        /// Speed selected for the cruise control in km/h.
-        /// Example: 75
-        /// </summary>
-        float CruiseControlSpeed { get; }
-
-        /// <summary>
         /// Brand Id of the current truck. 
         /// Example: "man".
         /// </summary>
@@ -243,28 +190,55 @@ namespace Funbit.Ets.Telemetry.Server.Data
         string Model { get; }
 
         /// <summary>
+        /// Current truck speed in km/h.
+        /// Example: 50.411231
+        /// </summary>
+        float Speed { get; }
+
+
+        /// <summary>
+        /// The value of the odometer in km.
+        /// Example: 105809.25
+        /// </summary>
+        float Odometer { get; }
+        /// <summary>
+        /// Speed selected for the cruise control in km/h.
+        /// Example: 75
+        /// </summary>
+        float CruiseControlSpeed { get; }
+
+        /// <summary>
+        /// Type of the shifter.
+        /// Left under truck interface for campability.
+        /// One of the following values: "arcade", "automatic", "manual", "hshifter".
+        /// </summary>
+        string ShifterType { get; }
+        /// <summary>
+        /// Number of forward gears on undamaged truck.
+        /// Left under truck interface for campability.
+        /// Example: 12
+        /// </summary>
+        int ForwardGears { get; }
+        /// <summary>
+        /// Number of reverse gears on undamaged truck.
+        /// Left under truck interface for campability.
+        /// Example: 2
+        /// </summary>
+        int ReverseGears { get; }
+        /// <summary>
         /// Gear that is currently selected in the engine.
         /// Positive values reflect forward gears, negative - reverse.
+        /// Left under truck interface for campability.
         /// Example: 9
         /// </summary>
         int Gear { get; }
         /// <summary>
         /// Gear that is currently displayed on the main dashboard.
         /// Positive values reflect forward gears, negative - reverse.
+        /// Left under truck interface for campability.
         /// Example: 4
         /// </summary>
         int DisplayedGear { get; }
-        /// <summary>
-        /// Number of forward gears on undamaged truck.
-        /// Example: 12
-        /// </summary>
-        int ForwardGears { get; }
-        /// <summary>
-        /// Number of reverse gears on undamaged truck.
-        /// Example: 2
-        /// </summary>
-        int ReverseGears { get; }
-
         /// <summary>
         /// Current RPM value of the truck's engine (rotates per minute).
         /// Example: 1372.3175
@@ -351,7 +325,7 @@ namespace Funbit.Ets.Telemetry.Server.Data
         /// Example: 0
         /// </summary>
         float GameClutch { get; }
-        
+
         /// <summary>
         /// Current level of the retarder brake.
         /// Ranges from 0 to RetarderStepCount.
@@ -364,17 +338,7 @@ namespace Funbit.Ets.Telemetry.Server.Data
         /// Example: 3
         /// </summary>
         int RetarderStepCount { get; }
-        /// <summary>
-        /// Gearbox slot the h-shifter handle is currently in.
-        /// 0 means that no slot is selected.
-        /// Example: 0
-        /// </summary>
-        int ShifterSlot { get; }
-        /// <summary>
-        /// TODO: need to fix.
-        /// </summary>
-        //int ShifterToggle { get; }
-        
+
         /// <summary>
         /// Pressure in the brake air tank in psi.
         /// Example: 133.043961
@@ -420,7 +384,7 @@ namespace Funbit.Ets.Telemetry.Server.Data
         /// Example: 0
         /// </summary>
         float AdblueCapacity { get; }
-        
+
         /// <summary>
         /// Current level of truck's engine wear/damage between 0 (min) and 1 (max).
         /// Example: 0.00675457
@@ -443,34 +407,8 @@ namespace Funbit.Ets.Telemetry.Server.Data
         /// </summary>
         float WearWheels { get; }
 
-        /// <summary>
-        /// Default position of the head in the cabin space.
-        /// Example: { "x": -0.795116067, "y": 1.43522251, "z": -0.08483863 }
-        /// </summary>
-        IEts2Vector Head { get; }
-        /// <summary>
-        /// Position of the cabin in the vehicle space.
-        /// This is position of the joint around which the cabin rotates.
-        /// This attribute might be not present if the vehicle does not have a separate cabin.
-        /// Example: { "x": 0, "y": 1.36506855, "z": -1.70362806 }
-        /// </summary>
-        IEts2Vector Cabin { get; }
-        /// <summary>
-        /// Position of the trailer connection hook in vehicle space.
-        /// Example: { "x": 0, "y": 0.939669, "z": -6.17736959 }
-        /// </summary>
-        IEts2Vector Hook { get; }
 
-        /// <summary>
-        /// All available selectors (e.g. range/splitter toggles). TODO: need to fix.
-        /// </summary>
-        //IEts2GearSlot[] GearSlots { get; }
 
-        /// <summary>
-        /// Type of the shifter.
-        /// One of the following values: "arcade", "automatic", "manual", "hshifter".
-        /// </summary>
-        string ShifterType { get; }
 
         /// <summary>
         /// Indicates whether cruise control is turned on or off. 
@@ -633,6 +571,45 @@ namespace Funbit.Ets.Telemetry.Server.Data
         /// The localized name of the truck's license plate's country
         /// </summary>
         string LicensePlateCountry { get; }
+
+        /// <summary>
+        /// Represents vehicle space linear acceleration of 
+        /// the truck measured in meters per second^2.
+        /// Example: { "x": 0.046569, "y": -0.00116, "z": -1.03676 }
+        /// </summary>
+        IEts2Vector Acceleration { get; }
+        /// <summary>
+        /// Current truck placement in the game world.
+        /// </summary>
+        IEts2Placement Placement { get; }
+
+        /// <summary>
+        /// Default position of the head in the cabin space.
+        /// Example: { "x": -0.795116067, "y": 1.43522251, "z": -0.08483863 }
+        /// </summary>
+        IEts2Vector Head { get; }
+        /// <summary>
+        /// Position of the cabin in the vehicle space.
+        /// This is position of the joint around which the cabin rotates.
+        /// This attribute might be not present if the vehicle does not have a separate cabin.
+        /// Example: { "x": 0, "y": 1.36506855, "z": -1.70362806 }
+        /// </summary>
+        IEts2Vector Cabin { get; }
+        /// <summary>
+        /// Position of the trailer connection hook in vehicle space.
+        /// Example: { "x": 0, "y": 0.939669, "z": -6.17736959 }
+        /// </summary>
+        IEts2Vector Hook { get; }
+
+        /// <summary>
+        /// Current number of wheels between 0 (min) and 16 (max).
+        /// </summary>
+        int WheelCount { get; }
+        /// <summary>
+        /// Wheels array between 0 (min) and 15 (max).
+        /// </summary>
+        IEts2Wheel[] Wheels { get; }
+
     }
 
     public interface IEts2Navigation
@@ -690,7 +667,7 @@ namespace Funbit.Ets.Telemetry.Server.Data
         /// Example: "0001-01-01T07:06:00Z"
         /// </summary>
         DateTime RemainingTime { get; }
-        
+
         /// <summary>
         /// Localized name of the source city for display purposes.
         /// Example: "Linz"
@@ -718,7 +695,7 @@ namespace Funbit.Ets.Telemetry.Server.Data
         /// <summary>
         /// The trailer number. 1 -> First trailer; 10 -> Last trailer
         /// </summary>
-        int TrailerNumber { get; }
+        int Number { get; }
 
         /// <summary>
         /// Is the trailer attached to the truck or not.
@@ -755,13 +732,14 @@ namespace Funbit.Ets.Telemetry.Server.Data
         /// Localized name of the trailer's brand.
         /// </summary>
         string Brand { get; }
+
         /// <summary>
         /// Localized name of the current trailer for display purposes.
         /// </summary>
         string Name { get; }
 
         /// <summary>
-        /// The chain type(?)
+        /// Trailers chain type
         /// </summary>
         string ChainType { get; }
 
@@ -786,6 +764,16 @@ namespace Funbit.Ets.Telemetry.Server.Data
         IEts2Placement Placement { get; }
 
         /// <summary>
+        /// Distance to the truck position.
+        /// </summary>
+        float Distance { get; }
+
+        /// <summary>
+        /// Hook position in the trailer.
+        /// </summary>
+        IEts2Vector Hook { get; }
+
+        /// <summary>
         /// Current level of cargo damage respective to this specific trailer between 0 (min) and 1 (max).
         /// Example: 0.0314717
         /// </summary>
@@ -802,6 +790,23 @@ namespace Funbit.Ets.Telemetry.Server.Data
         /// Example: 0.0314717
         /// </summary>
         float WearWheels { get; }
+
+        /// <summary>
+        /// For compability, current level of wear/damage between 0 (min) and 1 (max).
+        /// Example: 0.0314717
+        /// </summary>
+        float Wear { get; set; }
+
+        /// <summary>
+        /// Current number of wheels between 0 (min) and 16 (max).
+        /// </summary>
+        uint WheelCount { get; }
+
+        /// <summary>
+        /// Wheels array between 0 (min) and 15 (max).
+        /// </summary>
+        IEts2Wheel[] Wheels { get; }
+
     }
 
     public interface IEts2Cargo
@@ -1011,8 +1016,6 @@ namespace Funbit.Ets.Telemetry.Server.Data
 
     #endregion
 
-
-    /*
     public interface IEts2Wheel
     {
         /// <summary>
@@ -1041,28 +1044,181 @@ namespace Funbit.Ets.Telemetry.Server.Data
         /// Is the wheel liftable or not.
         /// </summary>
         bool Liftable { get; }
+        /// <summary>
+        ///  For use with simple lifted/non-lifted test.
+        /// </summary>
+        bool Lifted { get; }
     }
 
-    public interface IEts2GearSlot
+    public interface IEts2Shifter
     {
         /// <summary>
-        /// Gear selected when requirements for this h-shifter slot are meet.
-        /// Example: 0
+        /// Type of the shifter.
+        /// Left under truck interface for campability.
+        /// One of the following values: "arcade", "automatic", "manual", "hshifter".
+        /// </summary>
+        string Type { get; }
+        /// <summary>
+        /// Number of forward gears on undamaged truck.
+        /// Example: 12
+        /// </summary>
+        int ForwardGears { get; }
+        /// <summary>
+        /// Forward gear names.
+        /// Example: ["N","CL","CH","1L","1H","2L","2H","3L","3H","4L","4H","5L","5H","6L","6H","7L","7H","8L","8H"]
+        /// </summary>
+        string[] ForwardGearNames { get; }
+        /// <summary>
+        /// Number of reverse gears on undamaged truck.
+        /// Example: 2
+        /// </summary>
+        int ReverseGears { get; }
+        /// <summary>
+        /// Reverse gear names.
+        /// Example: ["N","R1L","R1H","R2L","R2H"]
+        /// </summary>
+        string[] ReverseGearNames { get; }
+        /// <summary>
+        /// Differential ratio of the truck.
+        /// Example: 3.25
+        /// </summary>
+        float DifferentialRatio { get; }
+        /// <summary>
+        /// Differential ratio of all forward gears.
+        /// Example: [14.4,12.29,8.56,7.3,6.05,5.16,4.38,3.74,3.2,2.73,2.29,1.95,1.62,1.38,1.17,1.0,0.86,0.73]
+        /// </summary>
+        float[] ForwardGearRatios { get; }
+        /// <summary>
+        /// Differential ratio of all reverse gears.
+        /// Example: [-15.06,-12.85,-4.03,-3.43]
+        /// </summary>
+        float[] ReverseGearRatios { get; }
+        /// <summary>
+        /// Circumference of the powered tyre.
+        /// Example: 3.1808698271960143
+        /// </summary>
+        double TyreCircumference { get; }
+        /// <summary>
+        /// Speed ​​reached by forward gear at 1500 rpm.
+        /// Example: [5,6,8,10,12,13,16,19,22,26,30,36,43,50,60,70,81,95]
+        /// </summary>
+        int[] ForwardSpeedAt1500Rpm { get; }
+        /// <summary>
+        /// Speed ​​reached by reverse gear at 1500 rpm.
+        /// Example: [-5,-5,-17,-20]
+        /// </summary>
+        int[] ReverseSpeedAt1500Rpm { get; }
+        /// <summary>
+        /// Engine RPM for all forward gears at current speed.
+        /// Example: [6410,5471,3810,3249,2693,2297,1950,1665,1424,1215,1019,868,721,614,521,445,383,325]
+        /// </summary>
+        int[] ForwardRpmAtCurrentSpeed { get; }
+        /// <summary>
+        /// Engine RPM for all reverse gears at current speed.
+        /// Example: [-6704,-5720,-1794,-1527]
+        /// </summary>
+        int[] ReverseRpmAtCurrentSpeed { get; }
+        /// <summary>
+        /// Number of selectors in the h-shifter.
+        /// Example: 4
+        /// </summary>
+        int SelectorCount { get; }
+        /// <summary>
+        /// Number of slots in the h-shifter.
+        /// Example: 7
+        /// </summary>
+        int SlotCount { get; }
+        /// <summary>
+        /// All available h-shifter handle.
+        /// Mapping to physical position of the handle depends on input setup.
+        /// Example: Slots[7]
+        /// </summary>
+        IEts2ShifterSlot[] Slots { get; }
+
+        /// <summary>
+        /// Gear that is currently selected in the engine.
+        /// Positive values reflect forward gears, negative - reverse.
+        /// Example: 9
         /// </summary>
         int Gear { get; }
+        /// <summary>
+        /// Gear that is currently displayed on the main dashboard.
+        /// Positive values reflect forward gears, negative - reverse.
+        /// Example: 4
+        /// </summary>
+        int DisplayedGear { get; }
+        /// <summary>
+        /// The name of the gear that is currently displayed on the main dashboard.
+        /// It depends on shifter type.
+        /// Example: 8L
+        /// </summary>
+        string DisplayedGearName { get; }
+        /// <summary>
+        /// Gear selected when requirements for this h-shifter slot are meet.
+        /// Example: 18
+        /// </summary>
+        float GearRatio { get; }
+
+        /// <summary>
+        /// Gearbox slot the h-shifter handle is currently in.
+        /// 0 means that no slot is selected.
+        /// Example: 7
+        /// </summary>
+        int Slot { get; }
+        /// <summary>
+        /// Mapping between the range/splitter functionality and
+        /// selector index is described by HSHIFTER configuration.
+        /// Example: 3
+        /// </summary>
+        int Selector { get; }
+
+        /// <summary>
+        /// The best gear to be selected.
+        /// Example: 14
+        /// Too simple. Needs a lot of work to be precise.
+        /// </summary>
+        int BestGear { get; }
+        /// <summary>
+        /// Name of the best gear to be selected.
+        /// Example: 6H
+        /// </summary>
+        string BestGearName { get; }
+
+    }
+
+
+    public interface IEts2ShifterSlot
+    {
         /// <summary>
         /// Position of h-shifter handle.
         /// Zero corresponds to neutral position. 
         /// Mapping to physical position of the handle depends on input setup.
-        /// Example: 0
+        /// Example: 7
         /// </summary>
-        int HandlePosition { get; }
+        int Slot { get; }
         /// <summary>
-        /// Bitmask of required on/off state of selectors.
-        /// Only first N number of bits are relevant (where N is the number of IEts2GearSlot objects).
-        /// Example: 0
+        /// All available shifter state of selectors.
+        /// Example: Seletors[4]
         /// </summary>
-        int SlotSelectors { get; }
+        IEts2ShifterSelector[] Seletors { get; }
     }
-    */
+    public interface IEts2ShifterSelector
+    {
+        /// <summary>
+        /// Position of the on/off state of selectors.
+        /// Example: 3
+        /// </summary>
+        int Selector { get; }
+        /// <summary>
+        /// Gear selected when requirements for this h-shifter slot are meet.
+        /// Example: 18
+        /// </summary>
+        int Gear { get; set; }
+        /// <summary>
+        /// Gear's name when requirements for this h-shifter slot are meet.
+        /// Example: 8H
+        /// </summary>
+        string GearName { get; set; }
+    }
+
 }
