@@ -338,7 +338,7 @@ namespace Funbit.Ets.Telemetry.Server.Data
                             ? new string[] { "N", "1", "2", "3", "4", "5L", "5H", "6L", "6H", "7L", "7H", "8L", "8H" }
                             : new string[] { "N", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12" };
                         break;
-                    case <11:
+                    default:
                         fwGears[0] = "N";
                         for(int i = 1; i < fwGears.Length; i++)
                         {
