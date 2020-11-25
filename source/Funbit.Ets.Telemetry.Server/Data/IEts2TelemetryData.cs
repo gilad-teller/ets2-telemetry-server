@@ -10,7 +10,7 @@ namespace Funbit.Ets.Telemetry.Server.Data
         /// Game information.
         /// </summary>
         IEts2Game Game { get; }
-
+        
         /// <summary>
         /// Truck information.
         /// </summary>
@@ -195,7 +195,7 @@ namespace Funbit.Ets.Telemetry.Server.Data
         /// </summary>
         float Speed { get; }
 
-
+        
         /// <summary>
         /// The value of the odometer in km.
         /// Example: 105809.25
@@ -325,7 +325,7 @@ namespace Funbit.Ets.Telemetry.Server.Data
         /// Example: 0
         /// </summary>
         float GameClutch { get; }
-
+        
         /// <summary>
         /// Current level of the retarder brake.
         /// Ranges from 0 to RetarderStepCount.
@@ -338,7 +338,7 @@ namespace Funbit.Ets.Telemetry.Server.Data
         /// Example: 3
         /// </summary>
         int RetarderStepCount { get; }
-
+        
         /// <summary>
         /// Pressure in the brake air tank in psi.
         /// Example: 133.043961
@@ -384,7 +384,7 @@ namespace Funbit.Ets.Telemetry.Server.Data
         /// Example: 0
         /// </summary>
         float AdblueCapacity { get; }
-
+        
         /// <summary>
         /// Current level of truck's engine wear/damage between 0 (min) and 1 (max).
         /// Example: 0.00675457
@@ -667,7 +667,7 @@ namespace Funbit.Ets.Telemetry.Server.Data
         /// Example: "0001-01-01T07:06:00Z"
         /// </summary>
         DateTime RemainingTime { get; }
-
+        
         /// <summary>
         /// Localized name of the source city for display purposes.
         /// Example: "Linz"

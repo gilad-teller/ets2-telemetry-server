@@ -11,7 +11,7 @@ namespace Funbit.Ets.Telemetry.Server.Data
     class Ets2TelemetryData : IEts2TelemetryData
     {
         Box<Ets2TelemetryStructure> _rawData;
-
+        
         public void Update(Ets2TelemetryStructure rawData)
         {
             _rawData = new Box<Ets2TelemetryStructure>(rawData);
@@ -40,9 +40,8 @@ namespace Funbit.Ets.Telemetry.Server.Data
         public IEts2Shifter Shifter => new Ets2Shifter(_rawData);
         public int TrailerCount
         {
-            get
-            {
-                for (int i = 9; i >= 0; i--)
+            get {
+                for (int i = 9; i >=0; i--)
                     if (!string.IsNullOrEmpty(Ets2TelemetryData.BytesToString((byte[])_rawData.Struct.GetType().GetField($"trailer{i}id").GetValue(_rawData.Struct))))
                         return i + 1;
                 return 0;
@@ -58,13 +57,12 @@ namespace Funbit.Ets.Telemetry.Server.Data
                     array = new IEts2Trailer[1];
                     array[0] = new Ets2Trailer(_rawData, 0);
                     return array;
-                }
-                else
+                } else
                 {
                     array = new IEts2Trailer[TrailerCount];
                     for (int i = 0; i < array.Length; i++)
                         array[i] = new Ets2Trailer(_rawData, i);
-
+                    
                 }
                 return array;
             }
@@ -340,9 +338,9 @@ namespace Funbit.Ets.Telemetry.Server.Data
                             ? new string[] { "N", "1", "2", "3", "4", "5L", "5H", "6L", "6H", "7L", "7H", "8L", "8H" }
                             : new string[] { "N", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12" };
                         break;
-                    default:
+                    case <11:
                         fwGears[0] = "N";
-                        for (int i = 1; i < fwGears.Length; i++)
+                        for(int i = 1; i < fwGears.Length; i++)
                         {
                             fwGears[i] = i.ToString();
                         }
@@ -395,9 +393,9 @@ namespace Funbit.Ets.Telemetry.Server.Data
                 return array;
             }
         }
-        public float[] ReverseGearRatios
+        public float[] ReverseGearRatios 
         {
-            get
+            get 
             {
                 if (ReverseGears == 0) return null;
                 float[] array = _rawData.Struct.gearRatiosReverse;
@@ -411,7 +409,7 @@ namespace Funbit.Ets.Telemetry.Server.Data
                 (_rawData.Struct.truckWheelPowered[4] == 1) ?
                     _rawData.Struct.truckWheelRadius[4] :
                     _rawData.Struct.truckWheelRadius[2] :
-                    _rawData.Struct.truckWheelRadius[2]) * 2 * Math.PI;
+                    _rawData.Struct.truckWheelRadius[2]) * 2 * Math.PI ;
         public int[] ForwardSpeedAt1500Rpm
         {
             get
@@ -482,8 +480,7 @@ namespace Funbit.Ets.Telemetry.Server.Data
                     slots = new IEts2ShifterSlot[SlotCount];
                     for (int slot = 0; slot < slots.Length; slot++)
                         slots[slot] = new Ets2ShifterSlot(_rawData, SelectorCount, slot, ForwardGearNames, ReverseGearNames);
-                }
-                else
+                } else
                 {
                     slots = new IEts2ShifterSlot[1];
                     slots[0] = new Ets2ShifterSlot(_rawData, SelectorCount, 0, ForwardGearNames, ReverseGearNames);
@@ -519,8 +516,7 @@ namespace Funbit.Ets.Telemetry.Server.Data
             get
             {
                 int selectors = 0;
-                if (Type == "hshifter")
-                {
+                if (Type == "hshifter") {
                     if (_rawData.Struct.shifterToggle != null)
                         for (int i = 0; i < _rawData.Struct.shifterToggle.Length; i++)
                             selectors += (int)Math.Pow(2, (double)i) * ((int)Math.Pow(2, (double)_rawData.Struct.shifterToggle[i]) - 1);
@@ -531,8 +527,8 @@ namespace Funbit.Ets.Telemetry.Server.Data
             }
         }
         public int BestGear   // Needs a lot of work.
-        {
-            get
+        { 
+            get 
             {
                 if (_rawData.Struct.speed == 0) return 0;
                 int r = 0;
@@ -639,7 +635,7 @@ namespace Funbit.Ets.Telemetry.Server.Data
 
         // ReSharper disable once PossibleNullReferenceException
         public float WearChassis => (float)_rawData.Struct.GetType().GetField($"trailer{_trailerNumber}wearChassis").GetValue(_rawData.Struct);
-
+        
         private float _wear;
         public float Wear
         {
@@ -734,12 +730,12 @@ namespace Funbit.Ets.Telemetry.Server.Data
     class Ets2Navigation : IEts2Navigation
     {
         readonly Box<Ets2TelemetryStructure> _rawData;
-
+        
         public Ets2Navigation(Box<Ets2TelemetryStructure> rawData)
         {
             _rawData = rawData;
         }
-
+        
         public DateTime EstimatedTime => Ets2TelemetryData.SecondsToDate((int)_rawData.Struct.navigationTime);
         public int EstimatedDistance => (int)_rawData.Struct.navigationDistance;
         public int SpeedLimit => _rawData.Struct.navigationSpeedLimit > 0 ? (int)Math.Round(_rawData.Struct.navigationSpeedLimit * 3.6f) : 0;
@@ -756,7 +752,7 @@ namespace Funbit.Ets.Telemetry.Server.Data
 
         public int Income => (int)_rawData.Struct.jobIncome;
         public DateTime DeadlineTime => Ets2TelemetryData.MinutesToDate((int)_rawData.Struct.jobDeadline);
-        public DateTime RemainingTime
+        public DateTime RemainingTime 
         {
             get
             {
@@ -804,7 +800,7 @@ namespace Funbit.Ets.Telemetry.Server.Data
         }
 
         public string FineOffense => Ets2TelemetryData.BytesToString(_rawData.Struct.fineOffence);
-        public int FineAmount => (int)_rawData.Struct.fineAmount;
+        public int FineAmount => (int) _rawData.Struct.fineAmount;
         public bool Fined => _rawData.Struct.fined != 0;
     }
 
@@ -857,7 +853,7 @@ namespace Funbit.Ets.Telemetry.Server.Data
         public string TargetName => Ets2TelemetryData.BytesToString(_rawData.Struct.ferryTargetName);
         public string SourceId => Ets2TelemetryData.BytesToString(_rawData.Struct.ferrySourceId);
         public string TargetId => Ets2TelemetryData.BytesToString(_rawData.Struct.ferryTargetId);
-        public int PayAmount => (int)_rawData.Struct.ferryPayAmount;
+        public int PayAmount => (int) _rawData.Struct.ferryPayAmount;
     }
 
     class Ets2TrainGameplayEvent : IEts2TrainGameplayEvent
@@ -941,7 +937,7 @@ namespace Funbit.Ets.Telemetry.Server.Data
         public IEts2Vector Position { get; private set; }
     }
 
-    class Box<T> where T : struct
+    class Box<T> where T : struct 
     {
         public T Struct { get; set; }
 
