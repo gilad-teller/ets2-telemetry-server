@@ -1,12 +1,13 @@
 {
    "game":{
       "connected":true,
-      "paused":true,
+      "paused":false,
       "time":"0001-01-08T21:09:00Z",
       "timeScale":19.0,
       "nextRestStopTime":"0001-01-01T10:11:00Z",
       "version":"1.10",
-      "telemetryPluginVersion":"4"
+      "telemetryPluginVersion":"4",
+	  "maxTrailerCount": 1
    },
    "truck":{
       "id":"man",
@@ -75,12 +76,12 @@
       "blinkerRightActive":false,
       "blinkerLeftOn":false,
       "blinkerRightOn":false,
-      "lightsParkingOn":false,
+      "lightsParkingOn":true,
       "lightsBeamLowOn":false,
       "lightsBeamHighOn":false,
       "lightsAuxFrontOn":false,
       "lightsAuxRoofOn":false,
-      "lightsBeaconOn":false,
+      "lightsBeaconOn":true,
       "lightsBrakeOn":false,
       "lightsReverseOn":false,
       "placement":{
@@ -112,12 +113,13 @@
          "z":-6.17736959
       }
    },
-   "trailer":{
+   "trailer1":{
+	  "present": true,
       "attached":true,
       "id":"derrick",
       "name":"Вышка",
       "mass":22000.0,
-      "wear":0.0234265551,
+      "wearChassis":0.07,
       "placement":{
          "x":13483.3223,
          "y":67.73905,
@@ -139,6 +141,11 @@
    "navigation":{
       "estimatedTime": "0001-01-01T03:01:40Z",
       "estimatedDistance": 132500,
-      "speedLimit": 90
+      "speedLimit": 100
+   },
+   "cargo": {
+	"mass": 10000,
+	"cargo": "Empty Boxes",
+	"damage": 0.05
    }
 }
